@@ -1,5 +1,7 @@
 //接口类型定义
 
+import Dashboard from '@/views/DashBoard'
+
 declare module 'axios' {
 	interface AxiosRequestConfig {
 		showLoading?: boolean
@@ -34,5 +36,30 @@ export namespace User {
 		roleList: (number | string)[]
 		createId: number
 		userImg: string
+	}
+}
+
+export namespace Dashboard {
+	export interface ReportData {
+		driverCount: number
+		totalMoney: number
+		orderCount: number
+		cityNum: 80
+	}
+	export interface LineData {
+		label: string[]
+		order: number[]
+		money: number[]
+	}
+	export interface PieData {
+		value: number
+		name: string
+	}
+	export interface RadarData {
+		indicator: Array<{ name: string; max: number }>
+		data: {
+			name: string
+			value: number
+		}
 	}
 }

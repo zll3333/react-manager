@@ -29,7 +29,7 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-	getItem('工作台', '1', <DesktopOutlined />),
+	getItem('工作台', 'dashboard', <DesktopOutlined />),
 	getItem('系统管理', '2', <SettingOutlined />, [
 		getItem('用户管理', 'sub2-1', <UsergroupAddOutlined />),
 		getItem('菜单管理', 'sub2-2', <MenuOutlined />),
@@ -51,7 +51,7 @@ const SideMenu = () => {
 	const collapsed = useStore(state => state.collapsed)
 
 	return (
-		<div>
+		<div className={styles.sideMenu}>
 			<div className={styles.logo} onClick={handleClickLogo}>
 				{collapsed ? (
 					<img src='/imgs/logo.png' className={styles.img} />

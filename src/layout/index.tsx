@@ -6,15 +6,15 @@ import SideMenu from '@/components/Menu'
 import { Outlet } from 'react-router-dom'
 import api from '@/api'
 import { useStore } from '@/store'
+import styles from './index.module.less'
 
-const { Content, Footer, Sider } = Layout
+const { Content, Footer, Sider, Header } = Layout
 
 const LayoutFC: React.FC = () => {
 	const updateUserInfo = useStore(state => state.updateUserInfo)
 	const collapsed = useStore(state => state.collapsed)
 	const getUserInfo = async () => {
 		const data = await api.getUserInfo()
-		// store.updateUserInfo(data)
 		updateUserInfo(data)
 	}
 	useEffect(() => {
@@ -24,17 +24,29 @@ const LayoutFC: React.FC = () => {
 	return (
 		<Watermark content={'react'}>
 			<Layout>
-				<Sider collapsible collapsed={collapsed}>
+				<Sider collapsed={collapsed}>
 					<SideMenu />
 				</Sider>
 				<Layout>
-					<NavHeader />
-					<Content style={{ margin: '20px 20px 0' }}>
-						<Outlet />
+					<Header
+						style={{
+							position: 'sticky',
+							zIndex: 1,
+							top: 0,
+							padding: 0,
+							backgroundColor: '#fff',
+							height: 50,
+						}}>
+						<NavHeader />
+					</Header>
+					<Content className={styles.content}>
+						<div className={styles.wrapper}>
+							<Outlet />
+						</div>
+						<Footer style={{ textAlign: 'center' }}>
+							<NavFooter />
+						</Footer>
 					</Content>
-					<Footer style={{ textAlign: 'center' }}>
-						<NavFooter />
-					</Footer>
 				</Layout>
 			</Layout>
 		</Watermark>

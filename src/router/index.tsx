@@ -4,6 +4,7 @@ import Layout from '@/layout'
 import Welcome from '@/views/Welcome'
 import Error404 from '@/views/Error/404'
 import Error403 from '@/views/Error/403'
+import Dashboard from '@/views/DashBoard'
 
 const routers = createBrowserRouter([
 	{
@@ -22,6 +23,10 @@ const routers = createBrowserRouter([
 			{
 				path: 'welcome',
 				element: <Welcome />,
+			},
+			{
+				path: 'dashboard',
+				element: <Dashboard />,
 			},
 		],
 	},
