@@ -1,12 +1,11 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import Login from '@/views/Login'
 import Layout from '@/layout'
-import Welcome from '@/views/Welcome'
 import Error404 from '@/views/Error/404'
 import Error403 from '@/views/Error/403'
-import Dashboard from '@/views/DashBoard'
-
-const routers = createBrowserRouter([
+import AuthLoader from './AuthLoader'
+import lazyLoad from './lazyLoad'
+import { lazy } from 'react'
+export const routers = [
 	{
 		path: '/',
 		// element:</>
@@ -14,19 +13,49 @@ const routers = createBrowserRouter([
 	},
 	{
 		path: '/login',
-		element: <Login />,
+		element: lazyLoad(lazy(() => import('@/views/Login'))),
 	},
 
 	{
 		element: <Layout />,
+		id: 'layout',
+		loader: AuthLoader,
 		children: [
 			{
 				path: 'welcome',
-				element: <Welcome />,
+				element: lazyLoad(lazy(() => import('@/views/Welcome'))),
 			},
 			{
 				path: 'dashboard',
-				element: <Dashboard />,
+				element: lazyLoad(lazy(() => import('@/views/DashBoard'))),
+			},
+			{
+				path: 'user',
+				element: lazyLoad(lazy(() => import('@/views/System/User'))),
+			},
+			{
+				path: 'dept',
+				element: lazyLoad(lazy(() => import('@/views/System/Dept'))),
+			},
+			{
+				path: 'menu',
+				element: lazyLoad(lazy(() => import('@/views/System/Menu'))),
+			},
+			{
+				path: 'role',
+				element: lazyLoad(lazy(() => import('@/views/System/Role'))),
+			},
+			{
+				path: 'orderList',
+				element: lazyLoad(lazy(() => import('@/views/Order/OrderList'))),
+			},
+			{
+				path: 'cluster',
+				element: lazyLoad(lazy(() => import('@/views/Order/Cluster'))),
+			},
+			{
+				path: 'driver',
+				element: lazyLoad(lazy(() => import('@/views/Order/DriverList'))),
 			},
 		],
 	},
@@ -42,6 +71,6 @@ const routers = createBrowserRouter([
 		path: '/403',
 		element: <Error403 />,
 	},
-])
+]
 
-export default routers
+export default createBrowserRouter(routers)

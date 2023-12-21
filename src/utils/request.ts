@@ -41,6 +41,7 @@ instance.interceptors.response.use(
 	response => {
 		const data: Result = response.data
 		HideLoading()
+		if (response.config.responseType === 'blob') return response
 		if (data.code === 500001) {
 			//data.code===500001  用户未登录
 			message.error(data.msg)
@@ -64,7 +65,7 @@ instance.interceptors.response.use(
 	}
 )
 
-//二次封装get、post方法
+//二次封装get、post方法，文件下载方法
 interface IConfig {
 	showLoading?: boolean
 	showError?: boolean
@@ -83,5 +84,23 @@ export default {
 		options: IConfig = { showLoading: true, showError: true }
 	): Promise<T> {
 		return instance.post(url, data, options)
+	},
+	downloadFile(url: string, data: any, fileName = 'filename.xlsx') {
+		instance({
+			url,
+			data,
+			method: 'post',
+			responseType: 'blob',
+		}).then(response => {
+			const blob = new Blob([response.data], { type: response.data.type }) //获取响应数据
+			const name = (response.headers['file-name'] as string) || fileName
+			const link = document.createElement('a')
+			link.download = decodeURIComponent(name) //直接传入name,如果含中文字符会使乱码，需要decodeURLComonent解码
+			link.href = URL.createObjectURL(blob)
+			document.body.append(link)
+			link.click()
+			document.body.removeChild(link)
+			window.URL.revokeObjectURL(link.href)
+		})
 	},
 }

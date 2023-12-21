@@ -23,6 +23,7 @@ export default function LoginFC() {
 			const data = await api.login(value)
 			setLoading(false)
 			storage.set('token', data)
+
 			//保存token
 			// store.token = data
 			updateToken(data)

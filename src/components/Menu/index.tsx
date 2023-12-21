@@ -1,14 +1,11 @@
 import styles from './index.module.less'
 import { Menu } from 'antd'
 import type { MenuProps } from 'antd'
-import {
-	DesktopOutlined,
-	UsergroupAddOutlined,
-	SettingOutlined,
-	MenuOutlined,
-} from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import * as Icons from '@ant-design/icons'
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useStore } from '@/store'
+import React, { useEffect, useState } from 'react'
+import { Menu as IMenu } from '@/types/api'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -20,35 +17,61 @@ function getItem(
 	type?: 'group'
 ): MenuItem {
 	return {
+		label,
 		key,
 		icon,
 		children,
-		label,
 		type,
 	} as MenuItem
 }
 
-const items: MenuItem[] = [
-	getItem('工作台', 'dashboard', <DesktopOutlined />),
-	getItem('系统管理', '2', <SettingOutlined />, [
-		getItem('用户管理', 'sub2-1', <UsergroupAddOutlined />),
-		getItem('菜单管理', 'sub2-2', <MenuOutlined />),
-		getItem('角色管理', 'sub2-3'),
-		getItem('部门管理', 'sub2-4'),
-	]),
-	getItem('订单管理', '3', <SettingOutlined />, [
-		getItem('订单列表', 'sub3-1'),
-		getItem('订单聚合', 'sub3-2'),
-		getItem('司机列表', 'sub3-3'),
-	]),
-]
-
 const SideMenu = () => {
 	const navigate = useNavigate()
+	const [menuItem, setTreeMenu] = useState<MenuItem[]>()
 	const handleClickLogo = () => {
 		navigate('/welcome')
 	}
+	const isdark = useStore(state => state.isDark)
+	const [selectedKeys, setSelectedKeys] = useState<string[]>([])
+	const { pathname } = useLocation()
+
 	const collapsed = useStore(state => state.collapsed)
+
+	const data: any = useRouteLoaderData('layout')
+	//递归生成菜单
+	const getTreeItem = (menuList: IMenu.MenuItem[], treeList: MenuItem[] = []) => {
+		menuList.forEach((item, index) => {
+			if (item.menuType === 1 && item.menuState === 1) {
+				if (item.buttons) {
+					return treeList.push(getItem(item.menuName, item.path || index, createIcon(item.icon)))
+				}
+				treeList.push(
+					getItem(
+						item.menuName,
+						item.path || index,
+						createIcon(item.icon),
+						getTreeItem(item.children || [])
+					)
+				)
+			}
+		})
+		return treeList
+	}
+
+	//自定义icon
+	const createIcon = (name?: string) => {
+		if (!name) return <></>
+		const customIcon: { [key: string]: any } = Icons
+		const icon = customIcon[name]
+		if (!icon) return <></>
+		return React.createElement(icon)
+	}
+
+	useEffect(() => {
+		const items = getTreeItem(data.menuList)
+		setTreeMenu(items)
+		setSelectedKeys([pathname])
+	}, [])
 
 	return (
 		<div className={styles.sideMenu}>
@@ -63,11 +86,14 @@ const SideMenu = () => {
 				)}
 			</div>
 			<Menu
-				// defaultSelectedKeys={['1']}
-				// defaultOpenKeys={['sub1']}
 				mode='inline'
-				theme='dark'
-				items={items}
+				theme={isdark ? 'light' : 'dark'}
+				items={menuItem}
+				selectedKeys={selectedKeys}
+				onClick={item => {
+					navigate(`${item.key}`)
+					setSelectedKeys([item.key])
+				}}
 			/>
 		</div>
 	)

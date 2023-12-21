@@ -88,8 +88,6 @@ export default function DashboardFC() {
 	const renderPieChartCity = async () => {
 		if (!pieChartCity) return
 		const data = await api.getPieCityData()
-		console.log(data)
-
 		pieChartCity?.setOption({
 			title: {
 				text: '司机城市分布',
